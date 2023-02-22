@@ -2,16 +2,16 @@ import Grid from "./grid";
 import { colorToString, stringToColor } from "./helpers";
 
 
-const Ripple = class {
+class Ripple {
   // Stores numbers representing the state of grid
-  // 0 for untouched by this effect
-  // 1 for currently under this effect
-  // 2 for previously under this effect
+  // 0 for untouched by this riple
+  // 1 for currently under this riple
+  // 2 for previously under this riple
   history: number[][];
-  // Stores the grids currently affected by this effect
+  // Stores the grids currently affected by the ripple
   current: Grid[];
   
-  // Influence of effect on grid and how it behaves
+  // Influence of ripple on grid and how it behaves
   color: number[];
   fade: number;
   bounce: boolean;
@@ -32,8 +32,9 @@ const Ripple = class {
     this.bounce = bounce;
   }
 
-  // Apply effect to neighbours
-  // Remove effect from currently affected
+  // Apply ripple to neighbours
+  // Remove ripple from currently affected
+  // Returns whether ripple is ongoing
   tick() {
     let newCurrent = []
     // Expand to neighbours who have never been affected
@@ -46,11 +47,13 @@ const Ripple = class {
         newCurrent.push(neighbour);
         neighbour.addColor(this.color);
       }
-      // Remove effect from current
+      // Remove riple from current
       this.history[affected.x][affected.y] = 2;
       affected.subColor(this.color);
     }
     this.current = newCurrent;
+
+    return newCurrent.length > 0
   }
   
   clone() {
