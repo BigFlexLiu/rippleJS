@@ -23,7 +23,7 @@ class Grid {
 
   subColor(color: number[]) {
     for (let i = 0; i < color.length; i++) {
-      this.color.push(this.color[i] - color[i]);
+      this.color[i] -= color[i];
     }
   }
 

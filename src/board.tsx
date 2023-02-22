@@ -1,8 +1,8 @@
 import "./App.css";
 import React, { useEffect, useState } from "react";
 import Grid from "./grid";
-import Effect from "./effect";
-import { colorToString, stringToColor } from "./helpers";
+import Ripple from "./effect";
+import { colorToString } from "./helpers";
 
 function Board() {
   const numRows = 20;
@@ -11,7 +11,7 @@ function Board() {
   const [board, setBoard] = useState([<tr></tr>]);
   const [boardData, setBoardData] = useState([[new Grid()]]);
   const [currEffect, setCurrEffect] = useState(
-    new Effect([numRows, rowLength], [], "#FF0000")
+    new Ripple([numRows, rowLength], [], "#FF0000")
   );
   const [effects, setEffects] = useState([currEffect]);
 
@@ -19,6 +19,7 @@ function Board() {
   useEffect(() => {
     const newBoard = [];
     const newBoardData = [];
+    // Populate board and board data
     for (let i = 0; i < numRows; i++) {
       let row = [];
       let dataRow = [];
@@ -30,7 +31,9 @@ function Board() {
               className="grid"
               style={{ backgroundColor: "#000000" }}
               onClick={(event) => {
-                event.currentTarget.style.backgroundColor = colorToString(currEffect.color);
+                event.currentTarget.style.backgroundColor = colorToString(
+                  currEffect.color
+                );
               }}
             ></button>
           </td>
@@ -39,9 +42,19 @@ function Board() {
       newBoard.push(<tr className="row">{row}</tr>);
       newBoardData.push(dataRow);
     }
+    // Populate neighbours of board data
+    for (let i = 0; i < numRows; i++) {
+      for (let j = 0; j < rowLength; j++) {
+        if (i > 0) newBoardData[i][j].neighbours.push(newBoardData[i - 1][j]);
+        if (i < numRows-1) newBoardData[i][j].neighbours.push(newBoardData[i + 1][j]);
+        if (j > 0) newBoardData[i][j].neighbours.push(newBoardData[i][j - 1]);
+        if (j < rowLength-1) newBoardData[i][j].neighbours.push(newBoardData[i][j+1]);
+      }
+    }
+
     setBoard(newBoard);
     setBoardData(newBoardData);
-    setEffects([])
+    setEffects([]);
   }, []);
 
   // Update page
@@ -56,13 +69,15 @@ function Board() {
               className="grid"
               style={{ backgroundColor: boardData[i][j].getColor() }}
               onClick={() => {
-                let newBoardData = boardData.slice()
-                newBoardData[i][j].addColor(currEffect.color)
+                let newBoardData = boardData.slice();
+                newBoardData[i][j].addColor(currEffect.color);
                 setBoardData(newBoardData);
 
-                let newEffects = effects.slice()
-                newEffects.push(Object.assign({}, currEffect))
-                setEffects(newEffects)
+                let newEffects = effects.slice();
+                let newEffect = currEffect.clone();
+                newEffect.current = [boardData[i][j]];
+                newEffects.push(newEffect);
+                setEffects(newEffects);
               }}
             ></button>
           </td>
@@ -71,7 +86,16 @@ function Board() {
       newBoard.push(<tr className="row">{row}</tr>);
     }
     setBoard(newBoard);
+    console.log(effects)
   }, [currEffect, effects, boardData]);
+
+  const tick = () => {
+    for (let effect of effects) {
+      console.log(effect);
+      effect.tick();
+    }
+    setBoardData(boardData.slice());
+  };
 
   return (
     <div>
@@ -88,11 +112,10 @@ function Board() {
       <button
         style={{ width: 60, height: 40 }}
         onClick={() =>
-          setCurrEffect(
-            new Effect([numRows, rowLength], [], "#00FF00")
-          )
+          setCurrEffect(new Ripple([numRows, rowLength], [], "#00FF00"))
         }
       ></button>
+      <button style={{ width: 60, height: 40 }} onClick={tick}></button>
     </div>
   );
 }

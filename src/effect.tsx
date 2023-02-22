@@ -1,8 +1,8 @@
 import Grid from "./grid";
-import { stringToColor } from "./helpers";
+import { colorToString, stringToColor } from "./helpers";
 
 
-const Effect = class {
+const Ripple = class {
   // Stores numbers representing the state of grid
   // 0 for untouched by this effect
   // 1 for currently under this effect
@@ -37,22 +37,25 @@ const Effect = class {
   tick() {
     let newCurrent = []
     // Expand to neighbours who have never been affected
-    for (let i of this.current) {
-      for (let j of i.neighbours) {
-        if (this.history[j.x][j.y] !== 0) {
+    for (let affected of this.current) {
+      for (let neighbour of affected.neighbours) {
+        if (this.history[neighbour.x][neighbour.y] !== 0) {
           continue;
         }
-        this.history[j.x][j.y] = 1;
-        newCurrent.push(j);
-        j.addColor(this.color);
+        this.history[neighbour.x][neighbour.y] = 1;
+        newCurrent.push(neighbour);
+        neighbour.addColor(this.color);
       }
       // Remove effect from current
-      this.history[i.x][i.y] = 2;
-      i.subColor(this.color);
+      this.history[affected.x][affected.y] = 2;
+      affected.subColor(this.color);
     }
     this.current = newCurrent;
   }
   
+  clone() {
+    return new Ripple([this.history.length, this.history[0].length], this.current.slice(), colorToString(this.color), this.fade, this.bounce);
+  }
 }
 
-export default Effect;
+export default Ripple;
