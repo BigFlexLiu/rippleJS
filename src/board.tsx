@@ -10,10 +10,10 @@ function Board() {
   const defaultColor = "#000000";
   const [board, setBoard] = useState([<tr></tr>]);
   const [boardData, setBoardData] = useState([[new Grid()]]);
-  const [effects, setEffects] = useState<typeof Effect[]>([]);
   const [currEffect, setCurrEffect] = useState(
     new Effect([numRows, rowLength], [], "#FF0000")
   );
+  const [effects, setEffects] = useState([currEffect]);
 
   // Set up
   useEffect(() => {
@@ -41,6 +41,7 @@ function Board() {
     }
     setBoard(newBoard);
     setBoardData(newBoardData);
+    setEffects([])
   }, []);
 
   // Update page
@@ -54,11 +55,14 @@ function Board() {
             <button
               className="grid"
               style={{ backgroundColor: boardData[i][j].getColor() }}
-              onClick={(event) => {
+              onClick={() => {
                 let newBoardData = boardData.slice()
                 newBoardData[i][j].addColor(currEffect.color)
                 setBoardData(newBoardData);
-                // event.currentTarget.style.backgroundColor = "#FFFF00"
+
+                let newEffects = effects.slice()
+                newEffects.push(Object.assign({}, currEffect))
+                setEffects(newEffects)
               }}
             ></button>
           </td>
@@ -67,7 +71,6 @@ function Board() {
       newBoard.push(<tr className="row">{row}</tr>);
     }
     setBoard(newBoard);
-    console.log("NOPE")
   }, [currEffect, effects, boardData]);
 
   return (
