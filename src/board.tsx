@@ -2,12 +2,14 @@ import "./App.css";
 import Grid from "./grid";
 
 interface BoardProps {
-  boardData: Grid[][],
-  addEffect: (x: number, y: number) => void
+  boardData: Grid[][];
+  addEffect: (x: number, y: number) => void;
+  isBlocking: boolean;
+  block: (x: number, y: number) => void;
 }
 
-const Board = ({boardData, addEffect}: BoardProps) => {
-  const board = []
+const Board = ({ boardData, addEffect, isBlocking, block }: BoardProps) => {
+  const board = [];
   // Generate board from board data
   for (let i = 0; i < boardData.length; i++) {
     let row = [];
@@ -18,9 +20,13 @@ const Board = ({boardData, addEffect}: BoardProps) => {
             className="grid"
             style={{ backgroundColor: boardData[i][j].getColor() }}
             onClick={() => {
-              addEffect(i, j);
+              if (isBlocking) {
+                block(i, j);
+              } else {
+                addEffect(i, j);
+              }
             }}
-          ></button>
+          >{boardData[i][j].isBlocked ? "X" : ""}</button>
         </td>
       );
     }
@@ -41,6 +47,6 @@ const Board = ({boardData, addEffect}: BoardProps) => {
       </table>
     </div>
   );
-}
+};
 
 export default Board;

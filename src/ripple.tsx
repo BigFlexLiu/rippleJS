@@ -16,7 +16,7 @@ class Ripple {
   fade: number;
   bounce: boolean;
 
-  constructor(boardSize: number[], current: Grid[], color = "#FFFFFF", fade = 1, bounce = false) {
+  constructor(boardSize: number[], current: Grid[], color = "#FFFFFF", fade = 0, bounce = false) {
     this.history = [];
     for (let i = 0; i < boardSize[0]; i++) {
       let row = [];
@@ -37,21 +37,23 @@ class Ripple {
   // Returns whether ripple is ongoing
   tick() {
     let newCurrent = []
+    const newColor = this.color.map((value) => Math.floor(value * (1 - this.fade)));
     // Expand to neighbours who have never been affected
     for (let affected of this.current) {
       for (let neighbour of affected.neighbours) {
-        if (this.history[neighbour.x][neighbour.y] !== 0) {
+        if (this.history[neighbour.x][neighbour.y] !== 0 || neighbour.isBlocked) {
           continue;
         }
         this.history[neighbour.x][neighbour.y] = 1;
         newCurrent.push(neighbour);
-        neighbour.addColor(this.color);
+        neighbour.addColor(newColor);
       }
       // Remove riple from current
       this.history[affected.x][affected.y] = 2;
       affected.subColor(this.color);
     }
     this.current = newCurrent;
+    this.color = newColor;
 
     return newCurrent.length > 0
   }

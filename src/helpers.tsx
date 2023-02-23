@@ -3,7 +3,7 @@
 export const colorToString = (color: number[]) => {
   let colorString = '#'
   for (let i of color) {
-    colorString += `${i.toString(16).padEnd(2, '0')}`;
+    colorString += `${i.toString(16).padStart(2, '0')}`;
   }
   return colorString;
 }
