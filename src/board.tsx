@@ -1,4 +1,3 @@
-import "./App.css";
 import Grid from "./grid";
 
 interface BoardProps {
@@ -34,16 +33,17 @@ const Board = ({ boardData, addEffect, isBlocking, block }: BoardProps) => {
   }
 
   return (
-    <div>
+    <div style={{flexGrow: "1", marginTop: "2em"}}>
       <table
         cellSpacing={0}
         style={{
           borderCollapse: "collapse",
-          display: "block",
+          display: "flex",
+          justifyContent: "center",
           borderSpacing: 0,
         }}
       >
-        <tbody>{board}</tbody>
+        <tbody style={{textAlign: "center"}}>{board}</tbody>
       </table>
     </div>
   );

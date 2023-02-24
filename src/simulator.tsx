@@ -6,8 +6,8 @@ import ToolBar from "./toolBar";
 
 const Simulator = () => {
   const defaultColor = "#000000";
-  const numRows = 20;
-  const rowLength = 20;
+  const [numRows, setNumRows] = useState(document.documentElement.clientHeight / 20 - 10);
+  const [rowLength, setRowLength] = useState(document.documentElement.clientWidth * 0.70 / 20 - 20);
   // MPR for milisecond per ripple
   const minMPR = 100;
   const maxMPR = 1000;
@@ -21,8 +21,23 @@ const Simulator = () => {
   const [playTimout, setPlayTimout] = useState<NodeJS.Timeout>();
   const [isBlocking, setIsBlocking] = useState(false);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setNumRows(document.documentElement.clientHeight / 20 - 10);
+      setRowLength(document.documentElement.clientWidth * 0.70 / 20 - 20);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   // Set up
   useEffect(() => {
+    makeBoard();
+  }, [numRows, rowLength]);
+
+  const makeBoard = () => {
     const newBoardData = [];
     // Populate board and board data
     for (let i = 0; i < numRows; i++) {
@@ -45,19 +60,32 @@ const Simulator = () => {
     }
 
     setBoardData(newBoardData);
-  }, []);
+  };
 
   const play = () => {
-    if (playTimout) {
-      clearInterval(playTimout);
-      setPlayTimout(undefined);
-    } else {
+    if (!ripples.size) {
+      return;
+    }
+    if (!pause()) {
       setPlayTimout(setInterval(tick, msPerRipple));
     }
   };
 
-  useEffect(() => {
+  const pause = () => {
     if (playTimout) {
+      clearInterval(playTimout);
+      setPlayTimout(undefined);
+      return true;
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    if (!ripples.size) {
+      pause();
+      return;
+    }
+    if (playTimout && ripples.size) {
       clearInterval(playTimout);
       setPlayTimout(setInterval(tick, msPerRipple));
     }
@@ -101,7 +129,7 @@ const Simulator = () => {
   const updateRipple = (
     color = rippleConfig.color,
     fade = rippleConfig.fade,
-    bounce = rippleConfig.bounce,
+    bounce = rippleConfig.bounce
   ) => {
     const newRippleConfig = rippleConfig.clone();
     newRippleConfig.color = color;
@@ -119,25 +147,37 @@ const Simulator = () => {
 
   const toggleBlock = () => {
     setIsBlocking(!isBlocking);
-  }
+  };
 
   const block = (x: number, y: number) => {
     boardData[x][y].isBlocked = !boardData[x][y].isBlocked;
     setBoardData(boardData.slice());
-  }
+  };
+
+  const clear = () => {
+    makeBoard();
+    setRipples(new Set());
+  };
 
   return (
-    <div style={{display: "flex", flexDirection:"row"}}>
-      <Board boardData={boardData} addEffect={addEffect} isBlocking={isBlocking} block={block}></Board>
+    <div style={{ display: "flex", flexDirection: "row" }}>
+      <Board
+        boardData={boardData}
+        addEffect={addEffect}
+        isBlocking={isBlocking}
+        block={block}
+      ></Board>
       <ToolBar
         tick={tick}
         ripple={rippleConfig}
         updateRipple={updateRipple}
         msPerRipple={msPerRipple}
         updateMPR={updateMPR}
+        isPlaying={playTimout !== undefined}
         play={play}
         isBlocking={isBlocking}
         toggleBlocking={toggleBlock}
+        onClear={clear}
       ></ToolBar>
     </div>
   );
