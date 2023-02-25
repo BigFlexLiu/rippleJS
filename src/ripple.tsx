@@ -58,8 +58,8 @@ class Ripple {
     return newCurrent.length > 0
   }
   
-  clone() {
-    return new Ripple([this.history.length, this.history[0].length], this.current.slice(), colorToString(this.color), this.fade, this.bounce);
+  clone(boardSize = [this.history.length, this.history[0].length]) {
+    return new Ripple(boardSize, this.current.slice(), colorToString(this.color), this.fade, this.bounce);
   }
 }
 

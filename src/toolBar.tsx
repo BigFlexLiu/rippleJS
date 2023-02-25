@@ -1,4 +1,4 @@
-import { stringToColor } from "./helpers";
+import { colorToString, stringToColor } from "./helpers";
 import Ripple from "./ripple";
 
 interface ToolBarProps {
@@ -32,18 +32,15 @@ const ToolBar = ({
   onClear,
 }: ToolBarProps) => {
   const colorChoices = new Map([
-    ["red", "#FF0000"],
-    ["green", "#00FF00"],
-    ["blue", "#0000FF"],
+    ["red", "#ff0000"],
+    ["green", "#00ff00"],
+    ["blue", "#0000ff"],
   ]);
 
   return (
-    <div
-      className="tool-bar"
-      style={{ float: "right", backgroundColor: "#333", minHeight: "100vh", maxWidth: "30vw", minWidth: "15em"}}
-    >
-      <div className="play-option" style={{ marginTop: "5em" }}>
-        <div className="horizontal-spread" style={{ margin: "0" }}>
+    <div className="tool-bar">
+      <div className="play-option">
+        <div className="spread" style={{ margin: "0" }}>
           <button
             className={`option-button play-button toggle-button ${
               isPlaying ? "active" : ""
@@ -57,55 +54,58 @@ const ToolBar = ({
             Clear
           </button>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div style={{ margin: 0, padding: 0 }}>
+      </div>
+      <div className="options">
+        <div className="horizontal-spread">
+          <div
+            className="horizontal-flexible"
+            style={{ margin: 0, padding: 0 }}
+          >
             <button onClick={() => updateMPR(msPerRipple - 100)}>-</button>
             <p style={{ minWidth: "3em" }}>{msPerRipple}</p>
             <button onClick={() => updateMPR(msPerRipple + 100)}>+</button>
           </div>
           <p>ms/ripple</p>
         </div>
-      </div>
-
-      <div className="horizontal-spread">
-        <p>Place:</p>
-        <button
-          className={`toggle-button ${isBlocking ? "active" : ""}`}
-          onClick={() => toggleBlocking()}
-        >
-          {`${isBlocking ? "Block" : "Ripple"}`}
-        </button>
-      </div>
-      <div className="fade-option horizontal-spread">
-        <div>
+        <div className="horizontal-spread">
           <button
-            onClick={() =>
-              updateRipple(
-                ripple.color,
-                Number(Math.max(ripple.fade - 0.1, 0).toFixed(1)),
-                ripple.bounce
-              )
-            }
+            className={`toggle-button ${isBlocking ? "active" : ""}`}
+            onClick={() => toggleBlocking()}
           >
-            -
+            {`${isBlocking ? "Block" : "Ripple"}`}
           </button>
-          <p style={{ minWidth: "2em" }}>{ripple.fade}</p>
-          <button
-            onClick={() =>
-              updateRipple(
-                ripple.color,
-                Number(Math.min(ripple.fade + 0.1, 1).toFixed(1)),
-                ripple.bounce
-              )
-            }
-          >
-            +
-          </button>
+          <p>type</p>
         </div>
-        <p>fade</p>
+        <div className="fade-option horizontal-spread">
+          <div className="horizontal-compressed">
+            <button
+              onClick={() =>
+                updateRipple(
+                  ripple.color,
+                  Number(Math.max(ripple.fade - 0.1, 0).toFixed(1)),
+                  ripple.bounce
+                )
+              }
+            >
+              -
+            </button>
+            <p style={{ minWidth: "2em" }}>{ripple.fade}</p>
+            <button
+              onClick={() =>
+                updateRipple(
+                  ripple.color,
+                  Number(Math.min(ripple.fade + 0.1, 1).toFixed(1)),
+                  ripple.bounce
+                )
+              }
+            >
+              +
+            </button>
+          </div>
+          <p>fade</p>
+        </div>
       </div>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        {/* <button
+      {/* <button
           onClick={() =>
             updateRipple(ripple.color, ripple.fade, !ripple.bounce)
           }
@@ -115,21 +115,18 @@ const ToolBar = ({
         >
           Bounce
         </button> */}
-        <div className="color-pallet" style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
-          <p style={{textAlign: "center"}}>Color: </p>
-          {Array.from(colorChoices).map(([name, hexCode]) => (
-            <button
-              style={{
-                width: "4em",
-                height: "2em",
-                margin: "0.5em",
-                backgroundColor: `${hexCode}`,
-              }}
-              onClick={() => updateRipple(stringToColor(hexCode))}
-            >
-            </button>
-          ))}
-        </div>
+      <div className="color-pallet">
+        {Array.from(colorChoices).map(([name, hexCode]) => (
+          <button
+            className={`${colorToString(ripple.color) === hexCode ?  "color-selected" : ""}`}
+            style={{
+              width: "4em",
+              height: "2em",
+              backgroundColor: `${hexCode}`,
+            }}
+            onClick={() => updateRipple(stringToColor(hexCode))}
+          ></button>
+        ))}
       </div>
     </div>
   );

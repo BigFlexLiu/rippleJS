@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import Board from "./board";
 import Simulator from "./simulator";
+import TitleBar from "./titleBar";
 
 function App() {
   return (
     <div className="app">
+      <TitleBar></TitleBar>
       <Simulator></Simulator>
     </div>
   );

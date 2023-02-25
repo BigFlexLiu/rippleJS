@@ -6,8 +6,8 @@ import ToolBar from "./toolBar";
 
 const Simulator = () => {
   const defaultColor = "#000000";
-  const [numRows, setNumRows] = useState(document.documentElement.clientHeight / 20 - 10);
-  const [rowLength, setRowLength] = useState(document.documentElement.clientWidth * 0.70 / 20 - 20);
+  const [numRows, setNumRows] = useState(0);
+  const [rowLength, setRowLength] = useState(0);
   // MPR for milisecond per ripple
   const minMPR = 100;
   const maxMPR = 1000;
@@ -22,9 +22,9 @@ const Simulator = () => {
   const [isBlocking, setIsBlocking] = useState(false);
 
   useEffect(() => {
+    calculateBoardSize();
     const handleResize = () => {
-      setNumRows(document.documentElement.clientHeight / 20 - 10);
-      setRowLength(document.documentElement.clientWidth * 0.70 / 20 - 20);
+      calculateBoardSize();
     };
     window.addEventListener("resize", handleResize);
     return () => {
@@ -32,10 +32,37 @@ const Simulator = () => {
     };
   }, []);
 
-  // Set up
+  // Handle screen size change
   useEffect(() => {
     makeBoard();
+    setRippleConfig(rippleConfig.clone([numRows, rowLength]));
   }, [numRows, rowLength]);
+
+  // Animate
+  useEffect(() => {
+    if (!ripples.size) {
+      pause();
+      return;
+    }
+    if (playTimout && ripples.size) {
+      clearInterval(playTimout);
+      setPlayTimout(setInterval(tick, msPerRipple));
+    }
+  }, [msPerRipple, ripples]);
+
+  const calculateBoardSize = () => {
+    const height = document.documentElement.clientHeight;
+    const width = document.documentElement.clientWidth;
+    // Portrait view
+    if (width / height < 1) {
+      setNumRows(document.documentElement.clientHeight * 0.70 / 20 - 5);
+      setRowLength(document.documentElement.clientWidth * 0.70 / 20);
+    } else {
+      // Landscape view
+      setNumRows(document.documentElement.clientHeight / 20 - 10);
+      setRowLength(document.documentElement.clientWidth * 0.70 / 20 - 10);
+    }
+  }
 
   const makeBoard = () => {
     const newBoardData = [];
@@ -80,19 +107,10 @@ const Simulator = () => {
     return false;
   };
 
-  useEffect(() => {
-    if (!ripples.size) {
-      pause();
-      return;
-    }
-    if (playTimout && ripples.size) {
-      clearInterval(playTimout);
-      setPlayTimout(setInterval(tick, msPerRipple));
-    }
-  }, [msPerRipple, ripples]);
 
   // Spread existing effects
   const tick = () => {
+    console.log(ripples);
     const completedRipples: Ripple[] = [];
     ripples.forEach((ripple) => {
       if (!ripple.tick()) {
@@ -160,7 +178,7 @@ const Simulator = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "row" }}>
+    <div className="simulator">
       <Board
         boardData={boardData}
         addEffect={addEffect}
