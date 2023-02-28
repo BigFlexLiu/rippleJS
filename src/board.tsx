@@ -5,9 +5,10 @@ interface BoardProps {
   addEffect: (x: number, y: number) => void;
   isBlocking: boolean;
   block: (x: number, y: number) => void;
+  isPlaying: boolean;
 }
 
-const Board = ({ boardData, addEffect, isBlocking, block }: BoardProps) => {
+const Board = ({ boardData, addEffect, isBlocking, block, isPlaying }: BoardProps) => {
   const board = [];
   // Generate board from board data
   for (let i = 0; i < boardData.length; i++) {
@@ -19,6 +20,9 @@ const Board = ({ boardData, addEffect, isBlocking, block }: BoardProps) => {
             className="grid"
             style={{ backgroundColor: boardData[i][j].getColor() }}
             onClick={() => {
+              if (isPlaying) {
+                return;
+              }
               if (isBlocking) {
                 block(i, j);
               } else {

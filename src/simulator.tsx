@@ -110,7 +110,6 @@ const Simulator = () => {
 
   // Spread existing effects
   const tick = () => {
-    console.log(ripples);
     const completedRipples: Ripple[] = [];
     ripples.forEach((ripple) => {
       if (!ripple.tick()) {
@@ -184,6 +183,7 @@ const Simulator = () => {
         addEffect={addEffect}
         isBlocking={isBlocking}
         block={block}
+        isPlaying={playTimout !== undefined}
       ></Board>
       <ToolBar
         tick={tick}
