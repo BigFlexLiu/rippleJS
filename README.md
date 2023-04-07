@@ -1,3 +1,6 @@
+# View project
+Project is hosted at https://brave-sand-0a701a510.3.azurestaticapps.net/
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
