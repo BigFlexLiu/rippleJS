@@ -68,7 +68,7 @@ const Simulator = () => {
     const newBoardData = [];
     // Populate board and board data
     for (let i = 0; i < numRows; i++) {
-      let dataRow = [];
+      const dataRow = [];
       for (let j = 0; j < rowLength; j++) {
         dataRow.push(new Grid(i, j, defaultColor));
       }
@@ -129,15 +129,15 @@ const Simulator = () => {
 
   // Adds current effect to grid at (x, y)
   const addEffect = (x: number, y: number) => {
-    let newBoardData = boardData.slice();
+    const newBoardData = boardData.slice();
     newBoardData[x][y].addColor(rippleConfig.color);
     setBoardData(newBoardData);
 
     // Duplicate current effect
-    let newEffect = rippleConfig.clone();
+    const newEffect = rippleConfig.clone();
     newEffect.current = [boardData[x][y]];
 
-    let newEffects = new Set(ripples);
+    const newEffects = new Set(ripples);
     newEffects.add(newEffect);
     setRipples(newEffects);
   };

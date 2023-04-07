@@ -118,6 +118,7 @@ const ToolBar = ({
       <div className="color-pallet">
         {Array.from(colorChoices).map(([name, hexCode]) => (
           <button
+            key={name}
             className={`${colorToString(ripple.color) === hexCode ?  "color-selected" : ""}`}
             style={{
               width: "4em",

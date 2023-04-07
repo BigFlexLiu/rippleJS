@@ -12,7 +12,7 @@ const Board = ({ boardData, addEffect, isBlocking, block, isPlaying }: BoardProp
   const board = [];
   // Generate board from board data
   for (let i = 0; i < boardData.length; i++) {
-    let row = [];
+    const row = [];
     for (let j = 0; j < boardData[0].length; j++) {
       row.push(
         <td key={`${i}:${j}`}>

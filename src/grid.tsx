@@ -8,7 +8,7 @@ class Grid {
   y: number;
   public neighbours: Grid[] = []
 
-  constructor(x: number = 0, y: number = 0, color = "#000000", isBlocked = false) {
+  constructor(x = 0, y = 0, color = "#000000", isBlocked = false) {
     this.x = x;
     this.y = y
     this.color = stringToColor(color);
@@ -29,7 +29,7 @@ class Grid {
 
   // Limits each value of color to be between 0 to 255
   getColor() {
-    let color = this.color;
+    const color = this.color;
     for (let i = 0; i < color.length; i++) {
       color[i] = Math.min(Math.max(0, color[i]), 255);
     }
